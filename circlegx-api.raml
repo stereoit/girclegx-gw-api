@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: CircleGX GW API
+description: User subscriber remoete API service
+baseUri: https://api.circlegx.com/{version}
+version: v1
+
+
+/subscribe:
+  description: "Provides services to the User Subscribe function."
+
+  post:
+    description: "Notify network about user subcription"
+    queryParameters:
+      access_token:
+        displayName: Access Token
+        example: AABBCCDD
+        type: string
+        description: The access token provided by the authentication application
+        required: true
+    body:
+      application/json:
+        example: |
+          {
+            "uid" : "0ed5f89f718b",
+            "paackage_id" : "2342",
+            "purchased_at" : "2008-09-15T15:53:00",
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "success": true,
+                "data": {
+                    "nid" : "5d1ea463-82a9-47bc-9a7d-161775510f46"
+                  }
+              }
