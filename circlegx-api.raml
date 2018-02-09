@@ -1,15 +1,85 @@
 #%RAML 1.0
 title: CircleGX GW API
-description: User subscriber remoete API service
+description: |
+  User subscriber API service
+
+  Kindly note, at this moment the endpoint itself, the parameters and its types
+  are subject to change and currently only represents a draft.
+
 baseUri: https://api.circlegx.com/{version}
 version: v1
 
+types:
+  error_response: |
+    {
+      "type": "object",
+      "title": "Error response",
+      "description": "Response that represents error",
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "required": true,
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message",
+          "required": true
+        },
+        "code": {
+          "type": "number",
+          "description": "Numerical representation of the error code",
+          "required": true
+        }
+      }
+    }
+  subscription: |
+    {
+      "type": "object",
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "required": true,
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Drum2u user id",
+          "required": true,
+          "minLength": 26,
+          "maxLength": 36
+        },
+        "package_id": {
+          "type": "number",
+          "description": "Id of the purchased package",
+          "required": true
+        },
+        "purchased_at": {
+          "type": "string",
+          "description": "Datetime of purchase in ISO 8601 Notation",
+          "required": true,
+          "minLength": 19,
+          "maxLength": 19
+        }
+      }
+    }
+  subscription_response: |
+    {
+      "type": "object",
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "required": true,
+      "properties": {
+        "nid": {
+          "type": "string",
+          "description": "Network assigned user id",
+          "required": true
+        }
+      }
+    }
 
-/subscribe:
-  description: "Provides services to the User Subscribe function."
+/subscription:
+  description: |
+    Provides services to the User Subscribe function.
+
+    The gateway (GW) forwards the request to the PCRF box and relay the outcome
+    message back. PCRF will send SMS token to the user equipment.
 
   post:
-    description: "Notify network about user subcription"
+    description: "Notify network about user subscription"
     queryParameters:
       access_token:
         displayName: Access Token
@@ -19,20 +89,28 @@ version: v1
         required: true
     body:
       application/json:
+        type: subscription
         example: |
           {
-            "uid" : "0ed5f89f718b",
-            "paackage_id" : "2342",
-            "purchased_at" : "2008-09-15T15:53:00",
+            "uid" : "0ed5f54sdfsh4365d7f89f718b",
+            "package_id" : 2342,
+            "purchased_at" : "2008-09-15T15:53:00"
           }
     responses:
       200:
         body:
           application/json:
+            type: subscription_response
             example: |
               {
-                "success": true,
-                "data": {
-                    "nid" : "5d1ea463-82a9-47bc-9a7d-161775510f46"
-                  }
+                "nid" : "5d1ea463-82a9-47bc-9a7d-161775510f46"
+              }
+      500:
+        body:
+          application/json:
+            type: error_response
+            example: |
+              {
+               "error": "Unauthorized access",
+               "code": 401
               }
