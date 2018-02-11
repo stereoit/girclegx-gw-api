@@ -10,26 +10,6 @@ baseUri: https://api.circlegx.com/{version}
 version: v1
 
 types:
-  error_response: |
-    {
-      "type": "object",
-      "title": "Error response",
-      "description": "Response that represents error",
-      "$schema": "http://json-schema.org/draft-07/schema",
-      "required": true,
-      "properties": {
-        "error": {
-          "type": "string",
-          "description": "Error message",
-          "required": true
-        },
-        "code": {
-          "type": "number",
-          "description": "Numerical representation of the error code",
-          "required": true
-        }
-      }
-    }
   subscription: |
     {
       "type": "object",
@@ -54,6 +34,13 @@ types:
           "required": true,
           "minLength": 19,
           "maxLength": 19
+        },
+        "msisdn": {
+          "type": "string",
+          "description": "Mobile Subscriber ISDN Number",
+          "minLength": 6,
+          "maxLength": 15,
+          "required": false
         }
       }
     }
@@ -63,10 +50,20 @@ types:
       "$schema": "http://json-schema.org/draft-07/schema",
       "required": true,
       "properties": {
+        "success": {
+          "type": "boolean"
+        },
         "nid": {
           "type": "string",
-          "description": "Network assigned user id",
-          "required": true
+          "description": "Network assigned user id"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "error_code": {
+          "type": "number",
+          "description": "Numerical representation of the error code"
         }
       }
     }
@@ -94,7 +91,8 @@ types:
           {
             "uid" : "0ed5f54sdfsh4365d7f89f718b",
             "package_id" : 2342,
-            "purchased_at" : "2008-09-15T15:53:00"
+            "purchased_at" : "2008-09-15T15:53:00",
+            "msisdn": "420603123456"
           }
     responses:
       200:
@@ -103,14 +101,16 @@ types:
             type: subscription_response
             example: |
               {
+                "success": true,
                 "nid" : "5d1ea463-82a9-47bc-9a7d-161775510f46"
               }
-      500:
+      401:
         body:
           application/json:
-            type: error_response
+            type: subscription_response
             example: |
               {
-               "error": "Unauthorized access",
-               "code": 401
+                "success": false,
+                "error": "Unauthorized access",
+                "code": 401
               }
